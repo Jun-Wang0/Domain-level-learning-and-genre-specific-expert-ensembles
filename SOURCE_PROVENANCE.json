@@ -1,0 +1,32 @@
+[
+  {
+    "source_notebook": "Genre Classification.ipynb",
+    "sha256": "6bd35a1f4e3df22f513f4d97518514c6ea18eac61dbe4da5eea8362102d9db1f",
+    "role": "source for cleaned release"
+  },
+  {
+    "source_notebook": "Sentiment_Model_Training.ipynb",
+    "sha256": "ad408d9409b455806993afb69cdb45ab14ca8c6b8c755106577b58ba57885899",
+    "role": "source for cleaned release"
+  },
+  {
+    "source_notebook": "main_book_to_light.ipynb",
+    "sha256": "650248ecd3fb5a07c73dcd40406ee3a18613c53f5a166f0c0ce2765f0e065346",
+    "role": "source for cleaned release"
+  },
+  {
+    "source_notebook": "Book_Genre_classification.ipynb",
+    "sha256": "25ee505f11eb08c2d21df47a0ec53d982922f3df9e83a10300abe70b6bd6fa85",
+    "role": "source for cleaned release"
+  },
+  {
+    "source_notebook": "Sentiment_Model_Training2.ipynb",
+    "sha256": "efa65e758a576ad796baea03ce8b6d3995cf4423ebc697d581c5e788be7489f8",
+    "role": "inspected related variant, not published"
+  },
+  {
+    "source_notebook": "Sentiment_Model_Training3.ipynb",
+    "sha256": "2e68524c97a66481d70c25a0f5ce4aa7e8af640d2d40e9be909815b35996a9dc",
+    "role": "inspected related variant, not published"
+  }
+]
