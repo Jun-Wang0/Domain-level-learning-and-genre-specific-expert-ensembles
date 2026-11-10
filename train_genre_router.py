@@ -1,4 +1,4 @@
-"""Source-domain genre router, extracted from Book_Genre_classification.ipynb."""
+"""Multi-label source-domain genre router training."""
 
 import argparse
 import inspect
@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score, f1_score
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           DataCollatorWithPadding, Trainer, TrainingArguments, set_seed)
 
-from ro3_common import (GENRES, MAX_LENGTH, MODEL_NAME, clear_memory, genre_csv,
+from common import (GENRES, MAX_LENGTH, MODEL_NAME, clear_memory, genre_csv,
                         router_path, write_json)
 
 
@@ -42,7 +42,7 @@ def train_router(domain, mode="full", learning_rate=3e-5, seed=42):
     if mode == "development":
         destination = destination.parent / (destination.name + "_dev_" + str(learning_rate))
     if destination.exists():
-        raise FileExistsError("Output already exists. Select a fresh RO3_OUTPUT.")
+        raise FileExistsError("Output already exists. Select a fresh ENSEMBLE_OUTPUT.")
     data, order = prepare_frame(pd.read_csv(genre_csv(domain)), domain)
     set_seed(seed)
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)

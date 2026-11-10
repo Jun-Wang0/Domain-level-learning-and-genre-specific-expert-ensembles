@@ -15,7 +15,7 @@ from transformers import RobertaConfig, RobertaForSequenceClassification, Robert
 
 import evaluate_cross_domain as evaluation
 import train_genre_router as router_training
-from ro3_common import (GENRES, binary_label, combine_logits, load_reviews,
+from common import (GENRES, binary_label, combine_logits, load_reviews,
                         resolve_genre_order, router_path, sentiment_metrics, sentiment_path)
 from train_genre_router import prepare_frame
 from train_sentiment import train_stage
@@ -82,14 +82,14 @@ class CoreTests(unittest.TestCase):
 
     def test_six_directions_and_result_saving(self):
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {
-                "RO3_ROOT": directory, "RO3_OUTPUT": directory + "/out",
-                "RO3_SENTIMENT_MODELS": directory + "/sentiment",
-                "RO3_ROUTER_MODELS": directory + "/routers"}):
+                "ENSEMBLE_ROOT": directory, "ENSEMBLE_OUTPUT": directory + "/out",
+                "ENSEMBLE_SENTIMENT_MODELS": directory + "/sentiment",
+                "ENSEMBLE_ROUTER_MODELS": directory + "/routers"}):
             for domain in GENRES:
                 path = Path(directory) / (domain + ".csv")
                 pd.DataFrame({"review": ["a", "b"], "sentiment": [0, 1]}).to_csv(path, index=False)
-                self.addCleanup(os.environ.pop, "RO3_" + domain.upper() + "_CSV", None)
-                os.environ["RO3_" + domain.upper() + "_CSV"] = str(path)
+                self.addCleanup(os.environ.pop, "ENSEMBLE_" + domain.upper() + "_CSV", None)
+                os.environ["ENSEMBLE_" + domain.upper() + "_CSV"] = str(path)
                 paths = [sentiment_path(domain, "4+0"), router_path(domain)]
                 paths += [sentiment_path(domain, "2+2", g) for g in GENRES[domain]]
                 for checkpoint in paths:
@@ -154,8 +154,8 @@ class TinyModelTests(unittest.TestCase):
             csv = directory / "genre.csv"
             order = list(reversed(GENRES["Book"]))
             pd.DataFrame({"review": texts, **{g: [0, 1] for g in order}}).to_csv(csv, index=False)
-            with patch.dict(os.environ, {"RO3_BOOK_GENRE_CSV": str(csv),
-                                          "RO3_ROUTER_MODELS": str(directory / "routers")}), \
+            with patch.dict(os.environ, {"ENSEMBLE_BOOK_GENRE_CSV": str(csv),
+                                          "ENSEMBLE_ROUTER_MODELS": str(directory / "routers")}), \
                     patch.object(router_training, "MODEL_NAME", str(backbone)), \
                     patch.object(torch.cuda, "is_available", return_value=False):
                 router_training.train_router("Book", mode="full")

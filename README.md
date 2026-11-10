@@ -1,6 +1,6 @@
 # Domain-Level Learning and Genre-Specific Expert Ensembles
 
-Text-only RO3 code accompanying **Integrating Domain-Level Learning and Genre-Specific Expert Ensembles for Cross-Domain Sentiment Analysis**.
+Code accompanying **Integrating Domain-Level Learning and Genre-Specific Expert Ensembles for Cross-Domain Sentiment Analysis**.
 
 The workflow trains a source-domain sentiment model, initializes ten genre-specific sentiment experts from that model, and evaluates on the other two domains. The release includes both source-genre routing and uniform expert averaging. Book, Game, and Movie yield six directed transfer pairs.
 
@@ -11,14 +11,15 @@ This repository contains **code and documentation only**. Review datasets, train
 | File | Purpose |
 | --- | --- |
 | `Sentiment_Model_Training.ipynb` | Colab entry point for the shared model and genre experts |
-| `main_book_to_light.ipynb` | Full-target-domain evaluation in all six directions, despite the historical filename |
-| `Genre_Router_Training.ipynb` | Actual multi-label genre classifier training, found in `Book_Genre_classification.ipynb` |
-| `Genre Classification.ipynb` | Archived, optional corpus-analysis notebook. It does **not** train the router |
+| `main_book_to_light.ipynb` | Full-target-domain evaluation in all six directions |
+| `Genre_Router_Training.ipynb` | Multi-label source-domain genre classifier training |
+| `Genre Classification.ipynb` | Optional corpus-analysis notebook. It does **not** train the router |
 | `train_sentiment.py` | Shared implementation of the text-only training allocations |
 | `train_genre_router.py` | Source-only router training and optional source development split |
 | `evaluate_cross_domain.py` | Shared, uniform, and routed evaluation with incremental result saving |
+| `common.py` | Shared configuration, data loading, validation, and evaluation metrics |
 
-The first three notebooks call the Python modules in this repository, so clone the repository before running them. Their setup cells do this in Colab. Drive originals are not modified.
+The first three notebooks call the Python modules in this repository, so clone the repository before running them. Their setup cells do this in Colab. Existing datasets and checkpoints are not modified.
 
 ## Environment
 
@@ -35,14 +36,14 @@ Dependencies are bounded ranges, not a historical environment lockfile. The incl
 
 ## Data and Configuration
 
-Configure the dataset and output locations for your own environment before running the notebooks. `RO3_ROOT` specifies the corpus root, and the environment variables below allow individual inputs and outputs to be configured.
+Configure the dataset and output locations for your own environment before running the notebooks. `ENSEMBLE_ROOT` specifies the corpus root, and the environment variables below allow individual inputs and outputs to be configured.
 
 The sentiment loader reads only review text and the binary sentiment label. Other columns are ignored.
 
 - Sentiment CSVs and genre-specific Excel files need `review` (alternatively `sentence` or `text`) and `sentiment` (alternatively `label`). Labels are `0` for negative and `1` for positive. Singleton-list labels such as `[1]` are accepted. Invalid labels cause an error, not silent conversion to negative.
-- Router CSVs need `review` and ten binary genre-indicator columns with the names in `ro3_common.GENRES`. Multiple positive genre labels per review are allowed. The column order is saved with the router.
-- `RO3_BOOK_CSV`, `RO3_GAME_CSV`, and `RO3_MOVIE_CSV` override full-domain sentiment paths. `RO3_BOOK_GENRE_CSV`, `RO3_GAME_GENRE_CSV`, and `RO3_MOVIE_GENRE_CSV` override router paths.
-- `RO3_OUTPUT` specifies where generated checkpoints and evaluation results are saved. Existing experiment files are not overwritten. Changing this variable selects a separate experiment directory.
+- Router CSVs need `review` and ten binary genre-indicator columns with the names in `common.GENRES`. Multiple positive genre labels per review are allowed. The column order is saved with the router.
+- `ENSEMBLE_BOOK_CSV`, `ENSEMBLE_GAME_CSV`, and `ENSEMBLE_MOVIE_CSV` override full-domain sentiment paths. `ENSEMBLE_BOOK_GENRE_CSV`, `ENSEMBLE_GAME_GENRE_CSV`, and `ENSEMBLE_MOVIE_GENRE_CSV` override router paths.
+- `ENSEMBLE_OUTPUT` specifies where generated checkpoints and evaluation results are saved. Existing experiment files are not overwritten. Changing this variable selects a separate experiment directory.
 
 Data must be supplied separately with appropriate access rights. This release does not redistribute review text or silently clean, resplit, or deduplicate the experimental corpora.
 
@@ -77,7 +78,7 @@ The optional router development mode preserves the original source-only 80/20 sp
 python train_genre_router.py --sources Book --mode development --learning-rate 3e-5
 ```
 
-The archived `Genre Classification.ipynb` uses a different exploratory 70/10/20 corpus split. It is **not** a required preprocessing step and was not substituted for the main full-source/full-target evaluation protocol.
+The optional `Genre Classification.ipynb` uses a separate exploratory 70/10/20 corpus split. It is **not** a required preprocessing step and does not replace the paper's full-source/full-target evaluation protocol.
 
 ## Cross-Domain Evaluation
 
@@ -95,10 +96,10 @@ Accuracy and macro-averaged precision, recall, and F1 are reported in percent. A
 
 ### Existing Checkpoints
 
-To evaluate existing models instead of newly trained ones, configure `RO3_SENTIMENT_MODELS` and `RO3_ROUTER_MODELS` to identify the corresponding checkpoint locations before running the evaluator.
+To evaluate existing models instead of newly trained ones, configure `ENSEMBLE_SENTIMENT_MODELS` and `ENSEMBLE_ROUTER_MODELS` to identify the corresponding checkpoint locations before running the evaluator.
 
 Router outputs must match expert names. New routers save semantic `id2label` mappings. Old routers with generic names such as `LABEL_0` require a JSON mapping supplied through `--router-labels`. This mapping lists the ten genre names for each source domain in the **original training CSV column order**. Do not infer that order from the alphabetical expert list. Uniform averaging does not require this mapping. The release cannot retroactively certify the correspondence between every historical checkpoint and result table.
 
 ## Scope
 
-This is a cleaned and consolidated code release, not an archive of completed runs. It does not include Roy/IMO comparison implementations, experimental top-k variants, older BERT prototypes, or trained models. `SOURCE_PROVENANCE.json` records the source notebook names and hashes. No new results or claims of exact historical reproduction are made by publishing the code.
+This repository provides the paper's source-domain learning, genre-specific expert training, and cross-domain ensemble evaluation implementations. External comparison-model implementations, datasets, and trained checkpoints are not included. Offline tests check software behavior on synthetic inputs, not the paper's reported scores. Reproducing those scores also requires the matching data, checkpoints, preprocessing, and runtime settings.

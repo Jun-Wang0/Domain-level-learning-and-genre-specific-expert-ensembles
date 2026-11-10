@@ -1,4 +1,4 @@
-"""Shared configuration and checks for the text-only RO3 release."""
+"""Shared configuration and validation for genre-specific expert ensembles."""
 
 import ast
 import gc
@@ -27,16 +27,16 @@ MAX_LENGTH = 128
 
 
 def project_root():
-    return Path(os.environ.get("RO3_ROOT", "/content/drive/MyDrive/PhD"))
+    return Path(os.environ.get("ENSEMBLE_ROOT", "/content/drive/MyDrive/PhD"))
 
 
 def output_root():
     # A new directory protects the original experiment checkpoints.
-    return Path(os.environ.get("RO3_OUTPUT", str(project_root() / "RO3_code_release")))
+    return Path(os.environ.get("ENSEMBLE_OUTPUT", str(project_root() / "genre_ensemble_runs")))
 
 
 def domain_csv(domain):
-    override = os.environ.get("RO3_" + domain.upper() + "_CSV")
+    override = os.environ.get("ENSEMBLE_" + domain.upper() + "_CSV")
     # Historical filenames are retained for compatibility. Only text and sentiment
     # columns are read by the sentiment pipeline.
     return Path(override) if override else (
@@ -45,7 +45,7 @@ def domain_csv(domain):
 
 
 def genre_csv(domain):
-    override = os.environ.get("RO3_" + domain.upper() + "_GENRE_CSV")
+    override = os.environ.get("ENSEMBLE_" + domain.upper() + "_GENRE_CSV")
     return Path(override) if override else (
         project_root() / "DataSet" / domain / "merged_balanced_reviews_multi_genre.csv")
 
@@ -55,11 +55,11 @@ def genre_subset(domain, genre):
 
 
 def sentiment_root():
-    return Path(os.environ.get("RO3_SENTIMENT_MODELS", str(output_root() / "sentiment")))
+    return Path(os.environ.get("ENSEMBLE_SENTIMENT_MODELS", str(output_root() / "sentiment")))
 
 
 def router_root():
-    return Path(os.environ.get("RO3_ROUTER_MODELS", str(output_root() / "genre")))
+    return Path(os.environ.get("ENSEMBLE_ROUTER_MODELS", str(output_root() / "genre")))
 
 
 def sentiment_path(domain, allocation, genre=None):

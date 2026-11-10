@@ -10,7 +10,7 @@ import torch
 from tqdm.auto import tqdm
 from transformers import AutoConfig, AutoModelForSequenceClassification, AutoTokenizer
 
-from ro3_common import (GENRES, MAX_LENGTH, clear_memory, combine_logits, domain_csv,
+from common import (GENRES, MAX_LENGTH, clear_memory, combine_logits, domain_csv,
                         load_reviews, output_root, resolve_genre_order, router_path,
                         sentiment_metrics, sentiment_path, write_json)
 

@@ -1,4 +1,4 @@
-"""Text-only branches of Sentiment_Model_Training.ipynb, consolidated by allocation."""
+"""Source-domain learning and independent genre-specific sentiment fine-tuning."""
 
 import argparse
 import copy
@@ -11,7 +11,7 @@ from tqdm.auto import tqdm
 from transformers import (AutoTokenizer, RobertaConfig, RobertaForSequenceClassification,
                           get_linear_schedule_with_warmup, set_seed)
 
-from ro3_common import (ALLOCATIONS, GENRES, MAX_LENGTH, MODEL_NAME, clear_memory,
+from common import (ALLOCATIONS, GENRES, MAX_LENGTH, MODEL_NAME, clear_memory,
                         domain_csv, genre_subset, load_reviews, sentiment_path, write_json)
 
 
@@ -69,7 +69,7 @@ def train_source(domain, allocation, batch_size=32, learning_rate=1e-5, seed=42,
     destinations = ([sentiment_path(domain, "4+0")] if allocation == "4+0" else
                     [sentiment_path(domain, allocation, genre) for genre in GENRES[domain]])
     if any(path.exists() for path in destinations):
-        raise FileExistsError("A destination already exists. Use a fresh RO3_OUTPUT; "
+        raise FileExistsError("A destination already exists. Use a fresh ENSEMBLE_OUTPUT; "
                               "this release does not overwrite or silently resume experiments.")
     inputs = ([domain_csv(domain)] if domain_epochs else [])
     if genre_epochs:

@@ -33,6 +33,6 @@ models/
 checkpoints/
 results/
 logs/
-RO3_code_release/
+genre_ensemble_runs/
 originals/
 inspection/
