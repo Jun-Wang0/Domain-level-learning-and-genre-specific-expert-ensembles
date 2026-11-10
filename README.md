@@ -10,10 +10,10 @@ This repository contains **code and documentation only**. Review datasets, train
 
 | File | Purpose |
 | --- | --- |
-| `notebooks/Sentiment_Model_Training.ipynb` | Colab entry point for the shared model and genre experts |
-| `notebooks/main_book_to_light.ipynb` | Full-target-domain evaluation in all six directions, despite the historical filename |
-| `notebooks/Genre_Router_Training.ipynb` | Actual multi-label genre classifier training, found in `Book_Genre_classification.ipynb` |
-| `notebooks/Genre Classification.ipynb` | Archived, optional corpus-analysis notebook. It does **not** train the router |
+| `Sentiment_Model_Training.ipynb` | Colab entry point for the shared model and genre experts |
+| `main_book_to_light.ipynb` | Full-target-domain evaluation in all six directions, despite the historical filename |
+| `Genre_Router_Training.ipynb` | Actual multi-label genre classifier training, found in `Book_Genre_classification.ipynb` |
+| `Genre Classification.ipynb` | Archived, optional corpus-analysis notebook. It does **not** train the router |
 | `train_sentiment.py` | Shared implementation of the text-only training allocations |
 | `train_genre_router.py` | Source-only router training and optional source development split |
 | `evaluate_cross_domain.py` | Shared, uniform, and routed evaluation with incremental result saving |
@@ -31,25 +31,18 @@ python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 ```
 
-Dependencies are bounded ranges, not a historical environment lockfile. The `tests/` directory contains offline checks using synthetic inputs for training, checkpoint loading, ensemble aggregation, metrics, and result saving. Full training has not been rerun as part of preparing this release.
+Dependencies are bounded ranges, not a historical environment lockfile. The included tests provide offline checks using synthetic inputs for training, checkpoint loading, ensemble aggregation, metrics, and result saving. Full training has not been rerun as part of preparing this release.
 
-## Data and Paths
+## Data and Configuration
 
-Set `RO3_ROOT` to the local corpus directory. The Colab default is `/content/drive/MyDrive/PhD`. The capitalization of `PhD`, `DataSet`, and `Dataset` follows the original Drive layout.
+Configure the dataset and output locations for your own environment before running the notebooks. `RO3_ROOT` specifies the corpus root, and the environment variables below allow individual inputs and outputs to be configured.
 
-```text
-PhD/
-  Sentiment_model/Dataset/{Book,Game,Movie}/Labeled/{book,game,movie}_metaphor.csv
-  DataSet/{Domain}/merged_balanced_reviews_multi_genre.csv
-  DataSet/{Domain}/{Genre}/{Genre}_balanced_reviews.xlsx
-```
-
-The first path denotes one CSV per domain, not every combination of names. The historical `_metaphor.csv` filename is retained solely for path compatibility. The sentiment loader reads only review text and the binary sentiment label. Other columns are ignored.
+The sentiment loader reads only review text and the binary sentiment label. Other columns are ignored.
 
 - Sentiment CSVs and genre-specific Excel files need `review` (alternatively `sentence` or `text`) and `sentiment` (alternatively `label`). Labels are `0` for negative and `1` for positive. Singleton-list labels such as `[1]` are accepted. Invalid labels cause an error, not silent conversion to negative.
 - Router CSVs need `review` and ten binary genre-indicator columns with the names in `ro3_common.GENRES`. Multiple positive genre labels per review are allowed. The column order is saved with the router.
 - `RO3_BOOK_CSV`, `RO3_GAME_CSV`, and `RO3_MOVIE_CSV` override full-domain sentiment paths. `RO3_BOOK_GENRE_CSV`, `RO3_GAME_GENRE_CSV`, and `RO3_MOVIE_GENRE_CSV` override router paths.
-- Generated checkpoints and evaluations go to `RO3_OUTPUT`, defaulting to `PhD/RO3_code_release`. Existing experiment files are not overwritten. Changing this variable selects a separate experiment directory.
+- `RO3_OUTPUT` specifies where generated checkpoints and evaluation results are saved. Existing experiment files are not overwritten. Changing this variable selects a separate experiment directory.
 
 Data must be supplied separately with appropriate access rights. This release does not redistribute review text or silently clean, resplit, or deduplicate the experimental corpora.
 
@@ -100,17 +93,11 @@ The router is trained as a multi-label classifier but its raw outputs are normal
 
 Accuracy and macro-averaged precision, recall, and F1 are reported in percent. All ten experts are required. Results and prediction labels, without review text, are saved after each completed pair in a new timestamped results directory. Missing or incompatible checkpoints cause an error rather than silent expert omission.
 
-### Existing Drive Checkpoints
+### Existing Checkpoints
 
-To evaluate existing models instead of newly trained ones, set these variables in Colab before running the evaluator.
+To evaluate existing models instead of newly trained ones, configure `RO3_SENTIMENT_MODELS` and `RO3_ROUTER_MODELS` to identify the corresponding checkpoint locations before running the evaluator.
 
-```python
-import os
-os.environ["RO3_SENTIMENT_MODELS"] = "/content/drive/MyDrive/PhD/Test_Version_Model/Sentiment_model"
-os.environ["RO3_ROUTER_MODELS"] = "/content/drive/MyDrive/PhD/Test_Version_Model/Genre_model"
-```
-
-Router outputs must match expert names. New routers save semantic `id2label` mappings. Old routers with generic names such as `LABEL_0` require `--router-labels path/to/verified_orders.json`, whose JSON maps each source domain to the ten genre names in the **original training CSV column order**. Do not infer that order from the alphabetical expert list. Uniform averaging does not require this mapping. The release cannot retroactively certify the correspondence between every historical checkpoint and result table.
+Router outputs must match expert names. New routers save semantic `id2label` mappings. Old routers with generic names such as `LABEL_0` require a JSON mapping supplied through `--router-labels`. This mapping lists the ten genre names for each source domain in the **original training CSV column order**. Do not infer that order from the alphabetical expert list. Uniform averaging does not require this mapping. The release cannot retroactively certify the correspondence between every historical checkpoint and result table.
 
 ## Scope
 
