@@ -31,7 +31,7 @@ python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 ```
 
-Dependencies are bounded ranges, not a historical environment lockfile. Local offline checks are described in `RELEASE_NOTES.md`. Full training has not been rerun as part of preparing this release.
+Dependencies are bounded ranges, not a historical environment lockfile. The `tests/` directory contains offline checks using synthetic inputs for training, checkpoint loading, ensemble aggregation, metrics, and result saving. Full training has not been rerun as part of preparing this release.
 
 ## Data and Paths
 
@@ -114,4 +114,4 @@ Router outputs must match expert names. New routers save semantic `id2label` map
 
 ## Scope
 
-This is a cleaned and consolidated code release, not an archive of completed runs. It does not include Roy/IMO comparison implementations, experimental top-k variants, older BERT prototypes, or trained models. Consult `RELEASE_NOTES.md` for provenance and changes. No new results or claims of exact historical reproduction are made by publishing the code.
+This is a cleaned and consolidated code release, not an archive of completed runs. It does not include Roy/IMO comparison implementations, experimental top-k variants, older BERT prototypes, or trained models. `SOURCE_PROVENANCE.json` records the source notebook names and hashes. No new results or claims of exact historical reproduction are made by publishing the code.
